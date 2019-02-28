@@ -9,7 +9,7 @@
         "APPNAME":true, "VERSION":true, "PRODUCTION":true,
 				"BUILD_AS_MODULE":true
     },
-    "extends": "eslint:recommended",
+    "extends": "./node_modules/eslint-xbsoftware/1__double_quotes_and_tabs/.eslintrc",
     "parserOptions": {
         "sourceType": "module",
         "ecmaVersion": 6,
