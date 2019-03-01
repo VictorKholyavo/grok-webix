@@ -11,7 +11,7 @@ export default class FormView extends JetView {
 				{
 					view: "text",
 					name: "rank",
-					label: "rank"
+					label: "Rank"
 				},
 				{
 					view: "text",
@@ -45,7 +45,7 @@ export default class FormView extends JetView {
 							view: "button",
 							localId: "closeButton",
 							value: "Close",
-							click: function() {
+							click: function () {
 								this.getTopParentView().hide();
 							}
 						}
@@ -86,7 +86,7 @@ export default class FormView extends JetView {
 	addOrSave() {
 		if (this.$$("form").validate()) {
 			const filled = this.$$("form").getValues();
-			if(filled.id) {
+			if (filled.id) {
 				films.updateItem(filled.id, filled);
 			}
 			webix.message("All is correct");
