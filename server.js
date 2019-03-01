@@ -8,6 +8,7 @@ let path = require('path');
 
 let app = express();
 let db;
+let dbDynamic;
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, '../')));
@@ -17,6 +18,20 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/', function (req, res) {
 	res.send('Hello API');
+})
+
+app.get('/users', function (req, res) {
+	dbDynamic.collection('users').find().toArray(function (err, docs) {
+		for (var i = 0; i < docs.length; i++){
+				docs[i].id = docs[i]._id;
+				delete docs[i]._id;
+		}
+		if (err) {
+			console.log(err);
+			return res.sendStatus(500)
+		}
+		res.send(docs);
+	})
 })
 
 app.get('/films', function (req, res) {
@@ -97,6 +112,7 @@ MongoClient.connect('mongodb://localhost:27017/myapi', { useNewUrlParser: true }
 		return console.log(err);
 	}
 	db = database.db('films');
+	dbDynamic = database.db('users');
 	app.listen(3012, function () {
 		console.log('API app started');
 	})
