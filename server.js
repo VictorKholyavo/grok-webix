@@ -20,19 +20,7 @@ app.get('/', function (req, res) {
 	res.send('Hello API');
 })
 
-app.get('/users', function (req, res) {
-	dbDynamic.collection('users').find().toArray(function (err, docs) {
-		for (var i = 0; i < docs.length; i++){
-				docs[i].id = docs[i]._id;
-				delete docs[i]._id;
-		}
-		if (err) {
-			console.log(err);
-			return res.sendStatus(500)
-		}
-		res.send(docs);
-	})
-})
+//FILMS for datasetA//
 
 app.get('/films', function (req, res) {
 	db.collection('films').find().toArray(function (err, docs) {
@@ -62,11 +50,6 @@ app.get('/films/:id', function (req, res) {
 })
 
 app.post('/films', function (req, res) {
-	let artist = {
-		newid: req.body._id,
-		name: req.body.name
-	};
-
 	db.collection('films').insertOne(req.body, function (err, result) {
 		if (err) {
 			console.log(err);
@@ -96,6 +79,78 @@ app.put('/films/:id', function (req, res) {
 
 app.delete('/films/:id', function (req, res) {
 	db.collection('films').deleteOne(
+		{ _id: ObjectID(req.params.id)},
+		function (err) {
+			if (err) {
+				return res.send({ status:"error" });
+			}
+			res.send({});
+		}
+	)
+})
+
+//USERS for datasetB//
+
+
+
+app.get('/users', function (req, res) {
+	dbDynamic.collection('users').find().toArray(function (err, docs) {
+
+		let start = req.query.start;
+		let count = req.query.count;
+
+		for (var i = 0; i < docs.length; i++){
+				docs[i].id = docs[i]._id;
+				delete docs[i]._id;
+		}
+
+		if (!count && !start) {
+			res.send({total_count: 778, data: []})
+		}
+		else {
+			console.log(count);
+			console.log(start);
+			let arr = [];
+			let n = 1;
+			for (let i = start; i <= +start + +count; i++) {
+				arr.push(docs[i]);
+			}
+			//count = +count + 40;
+			console.log(count);
+			console.log(arr.length);
+			res.send({pos: start, data: arr});
+		}
+
+		// if (err) {
+		// 	console.log(err);
+		// 	return res.sendStatus(500)
+		// }
+
+	//	res.send({pos: req.query.start, data: docs, total_count: req.query.count});
+	})
+})
+
+app.get('/users/:id', function (req, res) {
+	dbDynamic.collection('users').findOne({ _id: ObjectID(req.params.id) }, function (err, docs) {
+		docs.id = docs._id;
+		delete docs._id
+
+		res.send(docs);
+	})
+})
+
+app.post('/users', function (req, res) {
+	dbDynamic.collection('users').insertOne(req.body, function (err, result) {
+		if (err) {
+			console.log(err);
+			return res.sendStatus(500);
+		}
+		res.send({newid: req.body._id});
+	})
+})
+
+app.delete('/users/:id', function (req, res) {
+	dbDynamic.collection('users').deleteOne(
 		{ _id: ObjectID(req.params.id)},
 		function (err) {
 			if (err) {

@@ -4,17 +4,18 @@ export default class ListView extends JetView {
 	config() {
 		return {
 			view:"datatable",
+			editable: true,
 		  columns:[
-		    { id:"id", header:"", css:{"text-align":"center"}, width:50 },
-		    { id:"package", header:"Name", fillspace:true },
-		    { id:"section", header:"Section", width:120 },
-		    { id:"size", header:"Size", width:80 },
-		    { id:"architecture", header:"PC", width:60 }
+		    { id: "name", header: "Name", fillspace: true},
+		    { id: "age", editor: "text", header: "Age"},
+		    { id: "gender", header: "Gender"},
+		    { id: "company", header: "Company"},
+		    { id: "favoriteFruit", header: "Favorite Fruit"}
 		  ],
-		  scroll:"y",
-		  datafetch:50,//default
-		  loadahead:100,
-		  url:"http://localhost:3012/users"
+		  scroll: "y",
+			datafetch: 40,
+	   	// loadahead: 30,
+		  url: "http://localhost:3012/users"
 		};
 	}
 	init() {
