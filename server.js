@@ -94,7 +94,6 @@ app.delete('/films/:id', function (req, res) {
 
 app.get('/users', function (req, res) {
 	let order = req.query.sort ? ["name", req.query.sort.name ] : [];
-	console.log(order);
 	dbDynamic.collection('users').find().sort(order).toArray(function (err, docs) {
 
 		let start = req.query.start;
@@ -119,13 +118,11 @@ app.get('/users', function (req, res) {
 })
 
 app.get('/users/:id', function (req, res) {
-	console.log(req.params.id);
 	dbDynamic.collection('users').findOne(
 		{ _id: req.params.id },
 		function (err, docs) {
 			docs.id = docs._id;
 			delete docs._id
-			console.log(docs);
 			res.send(docs)
 		}
 	)
@@ -141,7 +138,6 @@ app.put('/users/:id', function (req, res) {
 		},
 		function (err, result) {
 			if (err) return res.send({ status:"error" });
-			console.log(result);
 			res.send({});
 		})
 })
