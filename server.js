@@ -60,12 +60,13 @@ app.post('/films', function (req, res) {
 })
 
 app.put('/films/:id', function (req, res) {
+	console.log('films');
 	db.collection('films').updateOne(
 		{ _id: ObjectID(req.params.id)},
 		{$set: {rank: req.body.rank, title: req.body.title, year: req.body.year, votes: req.body.votes, rating: req.body.rating}},
 		{
 			upsert: false,
-			multi: false
+			multi: true
 		},
 		function (err) {
 			if (err) {
@@ -91,62 +92,58 @@ app.delete('/films/:id', function (req, res) {
 
 //USERS for datasetB//
 
-
-
 app.get('/users', function (req, res) {
-	dbDynamic.collection('users').find().toArray(function (err, docs) {
+	let order = req.query.sort ? ["name", req.query.sort.name ] : [];
+	console.log(order);
+	dbDynamic.collection('users').find().sort(order).toArray(function (err, docs) {
 
 		let start = req.query.start;
 		let count = req.query.count;
+		let arr = [];
 
 		for (var i = 0; i < docs.length; i++){
 				docs[i].id = docs[i]._id;
 				delete docs[i]._id;
 		}
 
-		if (!count && !start) {
-			res.send({total_count: 778, data: []})
+		for (let i = start; i <= +start + +count; i++) {
+			arr.push(docs[i]);
 		}
-		else {
-			console.log(count);
-			console.log(start);
-			let arr = [];
-			let n = 1;
-			for (let i = start; i <= +start + +count; i++) {
-				arr.push(docs[i]);
-			}
-			//count = +count + 40;
-			console.log(count);
-			console.log(arr.length);
-			res.send({pos: start, data: arr});
+		res.send({"pos": start, "data": arr, "total_count": 778});
+
+		if (err) {
+			console.log(err);
+			return res.sendStatus(500)
 		}
-
-		// if (err) {
-		// 	console.log(err);
-		// 	return res.sendStatus(500)
-		// }
-
-	//	res.send({pos: req.query.start, data: docs, total_count: req.query.count});
 	})
 })
 
 app.get('/users/:id', function (req, res) {
-	dbDynamic.collection('users').findOne({ _id: ObjectID(req.params.id) }, function (err, docs) {
-		docs.id = docs._id;
-		delete docs._id
-
-		res.send(docs);
-	})
+	console.log(req.params.id);
+	dbDynamic.collection('users').findOne(
+		{ _id: req.params.id },
+		function (err, docs) {
+			docs.id = docs._id;
+			delete docs._id
+			console.log(docs);
+			res.send(docs)
+		}
+	)
 })
 
-app.post('/users', function (req, res) {
-	dbDynamic.collection('users').insertOne(req.body, function (err, result) {
-		if (err) {
-			console.log(err);
-			return res.sendStatus(500);
-		}
-		res.send({newid: req.body._id});
-	})
+app.put('/users/:id', function (req, res) {
+	dbDynamic.collection('users').updateOne(
+		{ _id: req.params.id},
+		{$set: {name: req.body.name, age: req.body.age, gender: req.body.gender, company: req.body.company, favoriteFruit: req.body.favoriteFruit}},
+		{
+			upsert: false,
+			multi: true
+		},
+		function (err, result) {
+			if (err) return res.send({ status:"error" });
+			console.log(result);
+			res.send({});
+		})
 })
 
 app.delete('/users/:id', function (req, res) {
@@ -162,7 +159,6 @@ app.delete('/users/:id', function (req, res) {
 })
 
 MongoClient.connect('mongodb://localhost:27017/myapi', { useNewUrlParser: true }, function (err, database) {
-
 	if (err) {
 		return console.log(err);
 	}
