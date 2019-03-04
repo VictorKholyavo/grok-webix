@@ -14,7 +14,7 @@ export default class ListView extends JetView {
 			],
 			scroll: "y",
 			datafetch: 40,
-			//loadahead: 30,
+			loadahead: 30,
 			url: "http://localhost:3012/users",
 			save: "rest->http://localhost:3012/users"
 		};
